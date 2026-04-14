@@ -1,0 +1,11 @@
+const { Router } = require("express");
+const { valideteFields } = require("../middlewares/validate-fields");
+
+
+const router = Router();
+
+router.post('/login',[
+    check('email', 'email is required').isEmail(),
+    check('password', 'password is required').not().isEmpty(),
+valideteFields],
+login)
