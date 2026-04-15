@@ -15,6 +15,8 @@ const dbConnection = async () => {
     }
 };
 
+//TODO Delete this functions, its only a test
+//There is a proble with de db connection
 async function debugDB() {
     const [db] = await sequelize.query('SELECT current_database();');
 console.log('DB:', db);
