@@ -15,8 +15,12 @@ class Server {
         this.server = require('http').createServer(this.app);
         // this.io = require('socket.io')(this.server)
         
+        this.pathOwner = '/api/Disclone';
+        this.paths = {
 
-        this.paths = {}
+            
+        }
+        console.log(this.paths.login)
 
 
 
@@ -66,6 +70,10 @@ class Server {
     }
     
     routes() {
+
+        this.app.use(this.pathOwner, require('../routers/auth'));
+
+
 
     }
     // sockets(){

@@ -30,6 +30,8 @@ const User = sequelize.define('User', {
         allowNull: true
     }
 }, {
+    tableName: 'users',
+    schema: 'public',
     timestamps: true,
     paranoid: true,
     underscored: true,
