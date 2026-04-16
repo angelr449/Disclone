@@ -1,6 +1,7 @@
 const { response } = require("express");
 const bcrypt = require('bcryptjs')
 const User = require("../models/User");
+const { generateJWT } = require("../helpers/generate-jwt");
 
 
 
@@ -66,24 +67,28 @@ const login = async (req, res = response) => {
     try {
 
         // Exists email?
-
-
         const user = await User.findOne({
             where: { email },
             paranoid: false
         })
 
-        if (!user) {
-            return res.status(400).json({ msg: `User doesn't exists` });
-        }
 
-        if (user.deleted_at) {
-
+        if (!user || user.deleted_at) {
             return res.status(400).json({ msg: `User doesn't exists` });
         }
 
 
-        // const validPassword = await bcry
+        // is a right password?
+        const validPassword = await bcrypt.compare(password, user.password);
+
+        if (!validPassword) {
+            return res.status(401).json({ msg: 'Invalid credentials' });
+        }
+
+        // generate a JWT
+
+        const token = await generateJWT(user.id)
+        res.status(200).json({ msg: 'Login successful', token});
 
     } catch (error) {
 
