@@ -1,4 +1,5 @@
 const { response } = require("express");
+const bcrypt = require('bcryptjs')
 const User = require("../models/User");
 
 
@@ -12,24 +13,33 @@ const signin = async (req, res = response) => {
         // if(!name & !email & !password & !repeatPasswod){
         //     return res.status(401).json({msg:'Please fill in the parameters'})
         // }
+
+        // Check password
         if (password != repeatPassword) {
             return res.status(401).json({ msg: 'Passwords do not match' });
 
         }
 
+        // Check if email is alredy in use
         const user = await User.findOne({
             where: { email },
             paranoid: false
         });
 
-        if(user){
+        if (user) {
             return res.status(409).json({ msg: 'Email already in use' });
         }
+
+        // encrypting password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
 
 
         const newUser = await User.create({
-            name, email, password
+            name,
+            email,
+            password: hashedPassword
         });
 
         res.status(201).json({ msg: 'User created', user: newUser });
@@ -37,9 +47,9 @@ const signin = async (req, res = response) => {
 
 
     } catch (error) {
-        if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(409).json({ msg: 'Email already in use' });
-        }
+        // if (error.name === 'SequelizeUniqueConstraintError') {
+        //     return res.status(409).json({ msg: 'Email already in use' });
+        // }
 
         console.log(error)
         res.status(500).json({
