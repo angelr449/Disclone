@@ -2,6 +2,8 @@ const Chat = require("./Chat")
 const ChatMember = require("./ChatMember")
 const User = require("./User")
 const Message = require("./Message");
+const Friend = require("./Friend");
+const FriendRequestStatus = require("./FriendRequestStatus");
 
 
 
@@ -30,4 +32,19 @@ ChatMember.belongsTo(User, { foreignKey: 'user_id' });
 Chat.hasMany(ChatMember, { foreignKey: 'chat_id' });
 ChatMember.belongsTo(Chat, { foreignKey: 'chat_id' });
 
-module.exports = { User, Chat, ChatMember, Message };
+// Friend => FriendRequestStatus
+
+FriendRequestStatus.hasMany(Friend, { foreignKey: 'status_id' });
+Friend.belongsTo(FriendRequestStatus, { foreignKey: 'status_id' });
+
+// User => Friend (requester)
+
+User.hasMany(Friend, { foreignKey: 'requester_id', as: 'sentRequests' });
+Friend.belongsTo(User, { foreignKey: 'requester_id', as: 'requester' });
+
+// User => Friend (receiver)
+
+User.hasMany(Friend, { foreignKey: 'receiver_id', as: 'receivedRequests' });
+Friend.belongsTo(User, { foreignKey: 'receiver_id', as: 'receiver' });
+
+module.exports = { User, Chat, ChatMember, Message, Friend, FriendRequestStatus };
