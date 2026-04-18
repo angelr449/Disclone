@@ -1,5 +1,5 @@
 const { response } = require("express")
-const { Chat } = require("../models")
+const { Chat, User } = require("../models")
 
 
 
@@ -15,8 +15,8 @@ const createChat = async (req, res = response) => {
         }
 
 
-        if(!name.trim()){
-            return res.status(400).json({msg: 'There is not a name'})
+        if (!name.trim()) {
+            return res.status(400).json({ msg: 'There is not a name' })
         }
 
         const newChat = await Chat.create({
@@ -41,7 +41,25 @@ const createChat = async (req, res = response) => {
 }
 
 
-const getChat = () => {
+const getChat = async (req, res = response) => {
+    const { user } = req;
+
+
+
+    try {
+        const allChats = await Chat.findAll({
+            include:[{
+                model: User,
+                where: {id: user.id},
+                through: {attributes:[]}
+            }]
+        });
+        res.status(200).json({ chats: allChats });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Please try again later.' });
+    }
 
 
 }
