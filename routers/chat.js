@@ -1,5 +1,6 @@
 const { Router } = require("express");
-const { pruebaChat, createChat, getChat, getMembersChat } = require("../controllers/chat");
+const { createChat, getChat, getMembersChat } = require("../controllers/chat");
+const { check } = require("express-validator");
 
 
 
@@ -9,15 +10,17 @@ const router = Router();
 
 
 router.post('/create-chat', [
+    check('name', 'name is required').not().isEmpty(),
+    check('type', 'type is required').not().isEmpty(),
 
 
-],createChat);
+], createChat);
 
-router.get('/get-chat',[
+router.get('/get-chat', [
 
 ], getChat);
 
-router.get('/get-members-chat:chatId',[
+router.get('/get-members-chat:chatId', [
 
 ], getMembersChat)
 
