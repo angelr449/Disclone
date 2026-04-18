@@ -8,7 +8,7 @@ const { validateJWT } = require("../middlewares/validate-jwt");
 
 
 const router = Router();
-
+//TODO crear addMember
 
 router.post('/create-chat', [
     check('name', 'name is required').not().isEmpty(),

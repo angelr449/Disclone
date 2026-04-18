@@ -1,5 +1,5 @@
 const { response } = require("express")
-const { Chat, User } = require("../models")
+const { Chat, User, ChatMember } = require("../models")
 
 
 
@@ -7,6 +7,7 @@ const { Chat, User } = require("../models")
 const createChat = async (req, res = response) => {
 
     const { type, name } = req.body;
+    const { user } = req;
 
     try {
         if (!['dm', 'server', 'group'].includes(type)) {
@@ -23,6 +24,11 @@ const createChat = async (req, res = response) => {
             type,
             name
 
+        })
+
+        await ChatMember.create({
+            chat_id: newChat.id,
+            user_id: user.id
         })
 
         res.status(201).json({ msg: 'Chat created', chat: newChat });
