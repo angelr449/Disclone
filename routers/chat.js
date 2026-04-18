@@ -13,13 +13,13 @@ const router = Router();
 router.post('/create-chat', [
     check('name', 'name is required').not().isEmpty(),
     check('type', 'type is required').not().isEmpty(),
-    validateJWT(),
+    validateJWT,
 
 
 ], createChat);
 
 router.get('/get-chat', [
-
+    validateJWT
 ], getChat);
 
 router.get('/get-members-chat:chatId', [

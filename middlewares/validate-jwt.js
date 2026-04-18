@@ -22,7 +22,7 @@ const validateJWT = async(req, res = response, next)=>{
         // Read the correct user and do uid have a  status:true?
         const user = await User.findByPk(uid);
 
-        if(!user || !user.status){
+        if(!user ){
             return res.status(401).json({
                 msg: 'Invalid token'
             });
