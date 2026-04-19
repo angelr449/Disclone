@@ -12,6 +12,7 @@ router.post('/signin',[
     check('email', 'email is required').isEmail(),
     check('password', 'password is required').not().isEmpty(),
     check('repeatPassword', 'repeatPassword is required').not().isEmpty(),
+    valideteFields
     
 
 
