@@ -32,6 +32,9 @@ router.get('/get-chat', [
 
 router.get('/get-members-chat/:chatId', [
 
+    validateJWT,
+    valideteFields
+
 ], getMembersChat)
 
 
