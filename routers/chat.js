@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { createChat, getChat, getMembersChat, chatAddMember } = require("../controllers/chat");
-const { check } = require("express-validator");
+const { check, param, body } = require("express-validator");
 const { validateJWT } = require("../middlewares/validate-jwt");
 const {valideteFields} = require('../middlewares/validate-fields');
 
@@ -18,9 +18,11 @@ router.post('/create-chat', [
     
 
 
-], createChat);
+], createChat); 
 
 router.post('/:chatId/add-member',[
+    param('chatId', 'chatId must be a number').isInt(),
+    body('userId', 'userId must be a number').isInt(),
 
     validateJWT,
     valideteFields
@@ -31,6 +33,7 @@ router.get('/get-chat', [
 ], getChat);
 
 router.get('/get-members-chat/:chatId', [
+    param('chatId', 'chatId must be a number').isInt(),
 
     validateJWT,
     valideteFields

@@ -55,7 +55,7 @@ const chatAddMember = async (req, res = response) => {
 
         const chat = await Chat.findByPk(chatId);
         if (!chat) {
-            return req.status(404).json({ msg: 'Chat not found' });
+            return res.status(404).json({ msg: 'Chat not found' });
         }
 
 
