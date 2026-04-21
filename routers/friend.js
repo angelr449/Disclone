@@ -3,7 +3,7 @@ const { createChat, getChat, getMembersChat, chatAddMember } = require("../contr
 const { check, param, body } = require("express-validator");
 const { validateJWT } = require("../middlewares/validate-jwt");
 const { valideteFields } = require('../middlewares/validate-fields');
-const { getFriends, sendFriendRequest, getFriendsPending } = require("../controllers/friend");
+const { getFriends, sendFriendRequest, getFriendsPending, respondFriendRequest } = require("../controllers/friend");
 
 const router = Router();
 
@@ -23,9 +23,12 @@ router.post('/send-request',[
     valideteFields,
 ], sendFriendRequest);
 
-// router.put('/:requestId/respond',[
+router.put('/:requestId/respond',[
 
-// ],)
+
+    validateJWT,
+    valideteFields
+], respondFriendRequest)
 
 
 
