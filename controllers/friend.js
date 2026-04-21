@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Friend } = require("../models");
+const { Friend, User } = require("../models");
 const { Op } = require("sequelize");
 
 
@@ -34,10 +34,26 @@ const getFriends = async (req, res = response) => {
 
 
 
-const getFriendsPending = (req, res=response)=>{
+const getFriendsPending = async(req, res=response)=>{
 
     const {user} = req;
     if (!user) return res.status(401).json({ msg: 'Unauthorized' });
+
+
+    try {
+        
+    const friendsPendingList = await Friend.findAll({
+        where:{
+            receiver_id: user.id,
+            status_id: 1,
+        }
+    })
+
+     res.status(201).json({ msg: 'Friends Peding List', friendsPendingList });
+    } catch (error) {
+                console.log(error);
+        res.status(500).json({ msg: 'Please try again later.' });
+    }
 
 
 }
@@ -47,6 +63,14 @@ const sendFriendRequest = async (req, res = response) => {
     const { user } = req;
     const { friendId } = req.body;
     if (!user) return res.status(401).json({ msg: 'Unauthorized' });
+
+    const existFriendId= await User.findAll({
+        where: {
+            id: friendId
+        }
+    });
+
+    if(!existFriendId) return res.status(404).json({msg: 'User not found'});
 
     try {
 
@@ -77,7 +101,7 @@ const sendFriendRequest = async (req, res = response) => {
 
 module.exports = {
     getFriends,
-    // getFriendsPending,
+    getFriendsPending,
     sendFriendRequest,
     // respondFriendRequest,
 
