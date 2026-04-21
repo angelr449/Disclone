@@ -8,7 +8,7 @@ const {valideteFields} = require('../middlewares/validate-fields');
 
 
 const router = Router();
-//TODO crear addMember
+
 
 router.post('/create-chat', [
     check('name', 'name is required').not().isEmpty(),

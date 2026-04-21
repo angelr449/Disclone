@@ -18,7 +18,8 @@ class Server {
         this.pathOwner = '/api/Disclone';
         this.paths = {
             auth: `${this.pathOwner}/auth`,
-            chats: `${this.pathOwner}/chats`
+            chats: `${this.pathOwner}/chats`,
+            friends: `${this.pathOwner}/friends`
             
         }
         console.log(this.paths.login)
@@ -74,6 +75,7 @@ class Server {
 
         this.app.use(this.paths.auth, require('../routers/auth'));
         this.app.use(this.paths.chats, require('../routers/chat'));
+        this.app.use(this.paths.friends, require('../routers/friend'));
 
 
 
