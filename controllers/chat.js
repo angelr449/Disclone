@@ -8,6 +8,7 @@ const createChat = async (req, res = response) => {
 
     const { type, name } = req.body;
     const { user } = req;
+    if(!user) return res.status(401).json({ msg: 'Unauthorized' });
 
     try {
         if (!['dm', 'server', 'group'].includes(type)) {
@@ -87,7 +88,7 @@ const chatAddMember = async (req, res = response) => {
 const getChat = async (req, res = response) => {
     const { user } = req;
 
-
+    if (!user) return res.status(401).json({ msg: 'Unauthorized' });
 
     try {
         const allChats = await Chat.findAll({
@@ -108,26 +109,26 @@ const getChat = async (req, res = response) => {
 }
 
 
-const getMembersChat = async(req, res = response) => {
+const getMembersChat = async (req, res = response) => {
     const { chatId } = req.params;
 
 
     try {
-        if(!chatId){return res.status(404).json({msg: 'Chat not found'})};
+        if (!chatId) { return res.status(404).json({ msg: 'Chat not found' }) };
 
         const chatMembers = await User.findAll({
-            include:[{
+            include: [{
                 model: Chat,
-                where:{id: chatId},
+                where: { id: chatId },
                 through: { attributes: [] }
             }]
         });
         res.status(200).json({ users: chatMembers });
-        
+
     } catch (error) {
         console.log(error);
         res.status(500).json({ msg: 'Please try again later.' });
-        
+
     }
 
 
