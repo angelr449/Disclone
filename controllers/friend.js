@@ -49,7 +49,7 @@ const getFriendsPending = async (req, res = response) => {
             }
         })
 
-        res.status(201).json({ msg: 'Friends Peding List', friendsPendingList });
+        res.status(200).json({ msg: 'Friends Peding List', friendsPendingList });
     } catch (error) {
         console.log(error);
         res.status(500).json({ msg: 'Please try again later.' });
@@ -92,7 +92,7 @@ const sendFriendRequest = async (req, res = response) => {
 const respondFriendRequest = async (req, res = response) => {
     const { user } = req;
     const { requestId } = req.params;
-    const { requestStatus } = req.body;
+    const requestStatus = Number(req.body.requestStatus);
 
     if (!user) return res.status(401).json({ msg: 'Unauthorized' });
 

@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const { createChat, getChat, getMembersChat, chatAddMember } = require("../controllers/chat");
-const { check, param, body } = require("express-validator");
+
+const { check, param } = require("express-validator");
 const { validateJWT } = require("../middlewares/validate-jwt");
 const { valideteFields } = require('../middlewares/validate-fields');
 const { getFriends, sendFriendRequest, getFriendsPending, respondFriendRequest } = require("../controllers/friend");
@@ -19,11 +19,17 @@ router.get('/pending',[
 ],  getFriendsPending);
 
 router.post('/send-request',[
+    check('friendId', 'friendId is requried').not().isEmpty(),
+    check('friendId', 'friendId should be a int').isInt(),
     validateJWT,
     valideteFields,
 ], sendFriendRequest);
 
 router.put('/:requestId/respond',[
+    param('requestId', 'requestId is required').not().isEmpty(),
+    param('requestId', 'requestId should be a int').isInt(),
+    check('requestStatus', 'requestStatus is required').not().isEmpty(),
+    check('requestStatus', 'requestStatus should be a int').isInt(),
 
 
     validateJWT,
