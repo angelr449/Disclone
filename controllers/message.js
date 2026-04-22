@@ -5,7 +5,7 @@ const { Message } = require("../models");
 
 const getMessages = async (req, res = response) => {
     const { chatId } = req.params;
-    const {user} = req;
+    const { user } = req;
 
     if (!chatId) return res.status(404).json({ msg: 'Chat not found', chatId });
     try {
@@ -17,7 +17,7 @@ const getMessages = async (req, res = response) => {
             where: {
                 chat_id: chatId
             },
-            include:[{
+            include: [{
                 model: User,
                 as: 'sender',
                 attributes: ['id', 'name', 'avatar']
@@ -30,7 +30,7 @@ const getMessages = async (req, res = response) => {
         console.log(error)
         res.status(500).json({
             msg: `Please try again later. If you still cannot, speak to the administrator.`
-        })
+        });
 
     }
 
@@ -38,7 +38,30 @@ const getMessages = async (req, res = response) => {
 }
 
 
-const deleteMessage = () => {
+const deleteMessage = async (req, res = response) => {
+    const { messageId } = req.params;
+    const { user } = req;
+    if (!messageId) return res.status(404).json({ msg: 'Message not found', messageId });
+    try {
+
+
+        const message = await Message.findOne({
+            where: { id: messageId, sender_id: user.id }
+        });
+
+        if (!message) return res.status(404).json({ msg: 'Message not found' });
+
+        await message.destroy();
+        return res.status(200).json({ msg: 'Message deleted' });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            msg: `Please try again later. If you still cannot, speak to the administrator.`
+        });
+
+    }
+
 
 }
 
