@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Message } = require("../models");
+const { Message, ChatMember, User } = require("../models");
 
 
 
@@ -66,7 +66,37 @@ const deleteMessage = async (req, res = response) => {
 }
 
 
-const editMessage = () => {
+const editMessage = async(req, res=response) => {
+
+     const { messageId } = req.params;
+    const { user } = req;
+    const {newContent } = req.body;
+    if (!messageId) return res.status(404).json({ msg: 'Message not found', messageId });
+
+      try {
+
+
+        const message = await Message.findOne({
+            where: { id: messageId, sender_id: user.id }
+        });
+
+        if (!message) return res.status(404).json({ msg: 'Message not found' });
+
+      
+
+        await message.update({
+            content: newContent
+        });
+        return res.status(200).json({ msg: 'Message updated' });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            msg: `Please try again later. If you still cannot, speak to the administrator.`
+        });
+
+    }
+
 
 
 }
