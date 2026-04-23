@@ -5,7 +5,7 @@ const { dbConnection } = require('../db/confing');
 // const fileUpload = require('express-fileupload')
 
 
-// const { socketController } = require('../sockets/controller');
+const { socketController } = require('../sockets/controller');
 
 class Server {
 
@@ -13,7 +13,7 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.server = require('http').createServer(this.app);
-        // this.io = require('socket.io')(this.server)
+        this.io = require('socket.io')(this.server)
         
         this.pathOwner = '/api/Disclone';
         this.paths = {
@@ -39,7 +39,7 @@ class Server {
 
         this.routes();
         //Sockets
-        // this.sockets();
+        this.sockets();
         
     }
     async connectDB() {
@@ -83,9 +83,9 @@ class Server {
 
 
     }
-    // sockets(){
-    //     this.io.on('connection', (socket)=> socketController(socket, this.io))
-    // }
+    sockets(){
+        this.io.on('connection', (socket)=> socketController(socket, this.io))
+    }
 
 
     listen() {
