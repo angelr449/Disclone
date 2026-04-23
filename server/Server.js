@@ -23,7 +23,7 @@ class Server {
             messages: `${this.pathOwner}/messages`,
             
         }
-        console.log(this.paths.login)
+        
 
 
 
