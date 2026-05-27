@@ -1,13 +1,13 @@
 const { Router } = require("express");
 const { valideteFields } = require("../middlewares/validate-fields");
-const { login, signin, lg } = require("../controllers/auth");
+const { login, signup } = require("../controllers/auth");
 const { check } = require("express-validator");
 
 
 const router = Router();
 
 
-router.post('/signin',[
+router.post('/signup',[
     check('name', 'name is required').not().isEmpty(),
     check('email', 'email is required').isEmail(),
     check('password', 'password is required').not().isEmpty(),
@@ -16,7 +16,7 @@ router.post('/signin',[
     
 
 
-],signin)
+],signup)
 
 router.post('/login',[
     check('email', 'email is required').isEmail(),
@@ -24,6 +24,6 @@ router.post('/login',[
 valideteFields],
 login); 
 
-// router.get('/login', [],lg) 
+
 
 module.exports = router;

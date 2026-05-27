@@ -6,7 +6,7 @@ const { generateJWT } = require("../helpers/generate-jwt");
 
 //TODO activar JWT cuando se hace un registro
 
-const signin = async (req, res = response) => {
+const signup = async (req, res = response) => {
 
     const { name, email, password, repeatPassword } = req.body;
 
@@ -106,6 +106,6 @@ const lg = () => {
 }
 module.exports = {
     login,
-    signin,
+    signup,
     lg
 }
