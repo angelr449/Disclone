@@ -1,17 +1,83 @@
 const { response } = require("express");
-const bcrypt = require('bcryptjs')
+
 const { User } = require("../models");
-const { generateJWT } = require("../helpers/generate-jwt");
 
 
-//TODO activar JWT cuando se hace un regist
+// GET /users/me
+const getUserByToken = async (req, res = response) => {
 
-const lg = () => {
+    const { user } = req;
 
-    res.status(200).json({ msg: 'hiii' })
-}
+    if (!user) {
+        return res.status(401).json({
+            msg: 'Unauthorized'
+        });
+    }
+
+    try {
+
+        const dbUser = await User.findByPk(user.id, {
+            attributes: {
+                exclude: ['password']
+            }
+        });
+
+        if (!dbUser) {
+            return res.status(404).json({
+                msg: 'User not found'
+            });
+        }
+
+        res.status(200).json({
+            user: dbUser
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            msg: 'Please try again later.'
+        });
+    }
+};
+
+
+// GET /users/:id
+const getUserById = async (req, res = response) => {
+
+    const { id } = req.params;
+
+    try {
+
+        const dbUser = await User.findByPk(id, {
+            attributes: {
+                exclude: ['password']
+            }
+        });
+
+        if (!dbUser) {
+            return res.status(404).json({
+                msg: 'User not found'
+            });
+        }
+
+        res.status(200).json({
+            user: dbUser
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            msg: 'Please try again later.'
+        });
+    }
+};
+
+
 module.exports = {
-    login,
-    signup,
-    lg
-}
+    getUserByToken,
+    getUserById
+};
