@@ -21,6 +21,7 @@ class Server {
             chats: `${this.pathOwner}/chats`,
             friends: `${this.pathOwner}/friends`,
             messages: `${this.pathOwner}/messages`,
+            users: `${this.pathOwner}/users`
             
         }
         
@@ -78,6 +79,7 @@ class Server {
         this.app.use(this.paths.chats, require('../routers/chat'));
         this.app.use(this.paths.friends, require('../routers/friend'));
         this.app.use(this.paths.messages, require('../routers/message'));
+        this.app.use(this.paths.users, require('../routers/user'));
 
 
 
