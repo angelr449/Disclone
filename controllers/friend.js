@@ -6,9 +6,7 @@ const { Op } = require("sequelize");
 
 
 const getFriends = async (req, res = response) => {
-
     const { user } = req;
-
     if (!user) return res.status(401).json({ msg: 'Unauthorized' });
 
     try {
@@ -18,19 +16,25 @@ const getFriends = async (req, res = response) => {
                     { requester_id: user.id },
                     { receiver_id: user.id }
                 ],
-                status_id: 2 //accepted
-
-            }
+                status_id: 2
+            },
+            include: [
+                { model: User, as: 'requester', attributes: ['id', 'name', 'avatar'] },
+                { model: User, as: 'receiver', attributes: ['id', 'name', 'avatar'] }
+            ]
         });
 
-        res.status(200).json({ friends: friendList });
+        // Devuelve solo el otro usuario
+        const friends = friendList.map(f => {
+            return f.requester_id === user.id ? f.receiver : f.requester;
+        });
+
+        res.status(200).json({ friends });
     } catch (error) {
         console.log(error);
         res.status(500).json({ msg: 'Please try again later.' });
     }
-
-
-}
+};
 
 
 
