@@ -47,6 +47,13 @@ const getUserByToken = async (req, res = response) => {
 const getUserById = async (req, res = response) => {
 
     const { id } = req.params;
+    const { user } = req;
+
+    if (!user) {
+        return res.status(401).json({
+            msg: 'Unauthorized'
+        });
+    }
 
     try {
 
