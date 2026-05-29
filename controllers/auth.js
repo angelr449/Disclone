@@ -4,16 +4,14 @@ const { User } = require("../models");
 const { generateJWT } = require("../helpers/generate-jwt");
 
 
-//TODO activar JWT cuando se hace un registro
+
 
 const signin = async (req, res = response) => {
 
     const { name, email, password, repeatPassword } = req.body;
 
     try {
-        // if(!name & !email & !password & !repeatPasswod){
-        //     return res.status(401).json({msg:'Please fill in the parameters'})
-        // }
+
 
         // Check password
         if (password != repeatPassword) {
@@ -42,15 +40,16 @@ const signin = async (req, res = response) => {
             email,
             password: hashedPassword
         });
+        // generate a JWT
 
-        res.status(201).json({ msg: 'User created', user: newUser });
+        const token = await generateJWT(newUser.id)
+        res.status(200).json({ msg: 'Signup successful', token });
+
+       
 
 
 
     } catch (error) {
-        // if (error.name === 'SequelizeUniqueConstraintError') {
-        //     return res.status(409).json({ msg: 'Email already in use' });
-        // }
 
         console.log(error)
         res.status(500).json({
@@ -88,7 +87,7 @@ const login = async (req, res = response) => {
         // generate a JWT
 
         const token = await generateJWT(user.id)
-        res.status(200).json({ msg: 'Login successful', token});
+        res.status(200).json({ msg: 'Login successful', token });
 
     } catch (error) {
 
@@ -100,12 +99,8 @@ const login = async (req, res = response) => {
     }
 }
 
-const lg = () => {
 
-    res.status(200).json({ msg: 'hiii' })
-}
 module.exports = {
     login,
-    signin,
-    lg
+    signin
 }
