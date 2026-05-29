@@ -6,7 +6,7 @@ const { generateJWT } = require("../helpers/generate-jwt");
 
 
 
-const signin = async (req, res = response) => {
+const signup = async (req, res = response) => {
 
     const { name, email, password, repeatPassword } = req.body;
 
@@ -102,5 +102,5 @@ const login = async (req, res = response) => {
 
 module.exports = {
     login,
-    signin
+    signup
 }
