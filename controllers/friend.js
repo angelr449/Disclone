@@ -41,8 +41,12 @@ const getFriends = async (req, res = response) => {
 const getFriendsPending = async (req, res = response) => {
 
     const { user } = req;
-    if (!user) return res.status(401).json({ msg: 'Unauthorized' });
 
+    if (!user) {
+        return res.status(401).json({
+            msg: 'Unauthorized'
+        });
+    }
 
     try {
 
@@ -50,16 +54,28 @@ const getFriendsPending = async (req, res = response) => {
             where: {
                 receiver_id: user.id,
                 status_id: 1,
-            }
-        })
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'requester',
+                    attributes: ['id', 'name', 'email', 'avatar']
+                }
+            ]
+        });
 
-        res.status(200).json({ msg: 'Friends Peding List', friendsPendingList });
+        return res.status(200).json({
+            msg: 'Friends Pending List',
+            friendsPendingList
+        });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({ msg: 'Please try again later.' });
+
+        return res.status(500).json({
+            msg: 'Please try again later.'
+        });
     }
-
-
 }
 
 
