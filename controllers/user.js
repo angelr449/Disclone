@@ -83,8 +83,49 @@ const getUserById = async (req, res = response) => {
     }
 };
 
+// GET /users/name/:name
+const getUserByName = async (req, res = response) => {
+
+    const { name } = req.params;
+    const { user } = req;
+
+    if (!user) {
+        return res.status(401).json({
+            msg: 'Unauthorized'
+        });
+    }
+
+    try {
+
+        const dbUser = await User.findOne({
+            where:{name},
+            attributes: {
+                exclude: ['password']
+            }
+        });
+
+        if (!dbUser) {
+            return res.status(404).json({
+                msg: 'User not found'
+            });
+        }
+
+        res.status(200).json({
+            user: dbUser
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            msg: 'Please try again later.'
+        });
+    }
+};
 
 module.exports = {
     getUserByToken,
-    getUserById
+    getUserById,
+    getUserByName
 };
