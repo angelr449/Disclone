@@ -15,19 +15,21 @@ router.get('/me', [
     valideteFields,
 
 ], getUserByToken);
-router.get('/:id', [
-    param('id', 'is required').isInt(),
+
+router.get('/search/:name', [
     validateJWT,
+    param('name', 'is required').notEmpty(),
+    valideteFields,
+
+], getUserByName);
+
+router.get('/:id', [
+    validateJWT,
+    param('id', 'is required').isInt(),
     valideteFields,
 
 ], getUserById);
 
-router.get('/search/:name', [
-    param('name', 'is required').notEmpty(),
-    validateJWT,
-    valideteFields,
-
-], getUserByName);
 
 
 
