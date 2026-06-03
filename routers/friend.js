@@ -3,7 +3,7 @@ const { Router } = require("express");
 const { check, param } = require("express-validator");
 const { validateJWT } = require("../middlewares/validate-jwt");
 const { valideteFields } = require('../middlewares/validate-fields');
-const { getFriends, sendFriendRequest, getFriendsPending, respondFriendRequest } = require("../controllers/friend");
+const { getFriends, sendFriendRequest,  respondFriendRequest, friendsPendingList } = require("../controllers/friend");
 
 const router = Router();
 
@@ -16,7 +16,7 @@ router.get('/get-friends', [
 router.get('/pending',[
     validateJWT,
     valideteFields,
-],  getFriendsPending);
+],  friendsPendingList);
 
 router.post('/send-request',[
     check('friendId', 'friendId is requried').not().isEmpty(),
