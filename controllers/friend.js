@@ -41,7 +41,14 @@ const getFriends = async (req, res = response) => {
 const getFriendsPending = async (req, res = response) => {
     const { user } = req;
 
+    if (!user) {
+        return res.status(401).json({
+            msg: 'Unauthorized'
+        });
+    }
+
     try {
+
         const friendsPendingList = await Friend.findAll({
             where: {
                 status_id: 1,
@@ -64,9 +71,19 @@ const getFriendsPending = async (req, res = response) => {
             ]
         });
 
+        const friendsPendingListFormatted = friendsPendingList.map(friend => ({
+            id: friend.id,
+            requester_id: friend.requester_id,
+            receiver_id: friend.receiver_id,
+            status_id: friend.status_id,
+            type: friend.requester_id === user.id ? 'sent' : 'received',
+            requester: friend.requester,
+            receiver: friend.receiver
+        }));
+
         return res.status(200).json({
             msg: 'Friends Pending List',
-            friendsPendingList
+            friendsPendingList: friendsPendingListFormatted
         });
 
     } catch (error) {
