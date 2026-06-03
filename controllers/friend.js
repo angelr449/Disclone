@@ -38,39 +38,56 @@ const getFriends = async (req, res = response) => {
 
 
 
-const friendsPendingList = await Friend.findAll({
-    where: {
-        status_id: 1,
-        [Op.or]: [
-            { requester_id: user.id },
-            { receiver_id: user.id }
-        ]
-    },
-    include: [
-        {
-            model: User,
-            as: 'requester',
-            attributes: ['id', 'name', 'email', 'avatar']
-        },
-        {
-            model: User,
-            as: 'receiver',
-            attributes: ['id', 'name', 'email', 'avatar']
-        }
-    ]
-});
+const getFriendsPending = async (req, res = response) => {
+    const { user } = req;
 
+    try {
+        const friendsPendingList = await Friend.findAll({
+            where: {
+                status_id: 1,
+                [Op.or]: [
+                    { requester_id: user.id },
+                    { receiver_id: user.id }
+                ]
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'requester',
+                    attributes: ['id', 'name', 'email', 'avatar']
+                },
+                {
+                    model: User,
+                    as: 'receiver',
+                    attributes: ['id', 'name', 'email', 'avatar']
+                }
+            ]
+        });
+
+        return res.status(200).json({
+            msg: 'Friends Pending List',
+            friendsPendingList
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            msg: 'Please try again later.'
+        });
+    }
+};
 
 const sendFriendRequest = async (req, res = response) => {
     const { user } = req;
     const { friendId } = req.body;
     if (!user) return res.status(401).json({ msg: 'Unauthorized' });
 
-    
+
     try {
         const existFriendId = await User.findByPk(friendId);
 
-    if (!existFriendId) return res.status(404).json({ msg: 'User not found' });
+        if (!existFriendId) return res.status(404).json({ msg: 'User not found' });
 
 
         const newFriendRequest = await Friend.create({
@@ -137,7 +154,7 @@ const respondFriendRequest = async (req, res = response) => {
 
 module.exports = {
     getFriends,
-    friendsPendingList,
+    getFriendsPending,
     sendFriendRequest,
     respondFriendRequest,
 
