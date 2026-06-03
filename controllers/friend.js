@@ -98,32 +98,99 @@ const getFriendsPending = async (req, res = response) => {
 const sendFriendRequest = async (req, res = response) => {
     const { user } = req;
     const { friendId } = req.body;
-    if (!user) return res.status(401).json({ msg: 'Unauthorized' });
 
-
-    try {
-        const existFriendId = await User.findByPk(friendId);
-
-        if (!existFriendId) return res.status(404).json({ msg: 'User not found' });
-
-
-        const newFriendRequest = await Friend.create({
-            requester_id: user.id,
-            receiver_id: friendId,
-            status_id: 1,
-        })
-        res.status(201).json({ msg: 'Friend request sent', request: newFriendRequest });
-
-
-    } catch (error) {
-
-
-        console.log(error);
-        res.status(500).json({ msg: 'Please try again later.' });
+    if (!user) {
+        return res.status(401).json({
+            msg: 'Unauthorized'
+        });
     }
 
+    try {
+        const receiverId = Number(friendId);
 
-}
+        // Evitar enviarse solicitud a sí mismo
+        if (user.id === receiverId) {
+            return res.status(400).json({
+                msg: 'You cannot send a friend request to yourself'
+            });
+        }
+
+        // Verificar que el usuario exista
+        const existFriendId = await User.findByPk(receiverId);
+
+        if (!existFriendId) {
+            return res.status(404).json({
+                msg: 'User not found'
+            });
+        }
+
+        // Buscar si ya existe alguna relación entre ambos usuarios
+        const existingRequest = await Friend.findOne({
+            where: {
+                [Op.or]: [
+                    {
+                        requester_id: user.id,
+                        receiver_id: receiverId
+                    },
+                    {
+                        requester_id: receiverId,
+                        receiver_id: user.id
+                    }
+                ]
+            }
+        });
+
+        if (existingRequest) {
+
+            // Solicitud pendiente
+            if (existingRequest.status_id === 1) {
+                return res.status(409).json({
+                    msg: 'Friend request already pending'
+                });
+            }
+
+            // Ya son amigos
+            if (existingRequest.status_id === 2) {
+                return res.status(409).json({
+                    msg: 'Users are already friends'
+                });
+            }
+
+            // Reenviar solicitud rechazada
+            if (existingRequest.status_id === 3) {
+                await existingRequest.update({
+                    requester_id: user.id,
+                    receiver_id: receiverId,
+                    status_id: 1
+                });
+
+                return res.status(200).json({
+                    msg: 'Friend request sent again',
+                    request: existingRequest
+                });
+            }
+        }
+
+        // Crear nueva solicitud
+        const newFriendRequest = await Friend.create({
+            requester_id: user.id,
+            receiver_id: receiverId,
+            status_id: 1
+        });
+
+        return res.status(201).json({
+            msg: 'Friend request sent',
+            request: newFriendRequest
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            msg: 'Please try again later.'
+        });
+    }
+};
 
 const respondFriendRequest = async (req, res = response) => {
     const { user } = req;
