@@ -269,7 +269,9 @@ const removeFriend = async (req, res = response) => {
             });
         }
 
-        await friendship.destroy();
+        await friendship.update({
+            status_id: 4
+        });
 
         return res.status(200).json({
             msg: 'Friend removed'
