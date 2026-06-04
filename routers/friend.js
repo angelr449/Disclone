@@ -36,18 +36,17 @@ router.put('/:requestId/respond', [
     valideteFields
 ], respondFriendRequest);
 
-router.delete('/:requestId/delete',
+router.delete(
+    '/delete/:friendId',
     [
-        param('requestId', 'requestId is required').not().isEmpty(),
-        param('requestId', 'requestId should be a int').isInt(),
-        check('requestStatus', 'requestStatus is required').not().isEmpty(),
-        check('requestStatus', 'requestStatus should be a int').isInt(),
-
-
         validateJWT,
+
+        check('friendId', 'friendId is required')
+            .isInt(),
+
         valideteFields
-    ], removeFriend);
-
-
+    ],
+    removeFriend
+);
 
 module.exports = router;
