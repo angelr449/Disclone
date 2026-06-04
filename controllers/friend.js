@@ -235,11 +235,59 @@ const respondFriendRequest = async (req, res = response) => {
 }
 
 
+const removeFriend = async (req, res = response) => {
+    const { user } = req;
+    const { friendId } = req.params;
 
+    if (!user) {
+        return res.status(401).json({
+            msg: 'Unauthorized'
+        });
+    }
+
+    try {
+
+        const friendship = await Friend.findOne({
+            where: {
+                status_id: 2,
+                [Op.or]: [
+                    {
+                        requester_id: user.id,
+                        receiver_id: friendId
+                    },
+                    {
+                        requester_id: friendId,
+                        receiver_id: user.id
+                    }
+                ]
+            }
+        });
+
+        if (!friendship) {
+            return res.status(404).json({
+                msg: 'Friendship not found'
+            });
+        }
+
+        await friendship.destroy();
+
+        return res.status(200).json({
+            msg: 'Friend removed'
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            msg: 'Please try again later.'
+        });
+    }
+};
 module.exports = {
     getFriends,
     getFriendsPending,
     sendFriendRequest,
     respondFriendRequest,
+    removeFriend
 
 }
