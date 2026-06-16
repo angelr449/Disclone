@@ -8,7 +8,7 @@ const createChat = async (req, res = response) => {
 
     const { type, name } = req.body;
     const { user } = req;
-    if(!user) return res.status(401).json({ msg: 'Unauthorized' });
+    if (!user) return res.status(401).json({ msg: 'Unauthorized' });
 
     try {
         if (!['dm', 'server', 'group'].includes(type)) {
@@ -94,9 +94,12 @@ const getChat = async (req, res = response) => {
         const allChats = await Chat.findAll({
             include: [{
                 model: User,
-                where: { id: user.id },
+                attributes: ['id', 'username'],
                 through: { attributes: [] }
-            }]
+            }],
+            where: {
+                '$Users.id$': user.id
+            }
         });
         res.status(200).json({ chats: allChats });
 
