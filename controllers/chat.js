@@ -94,7 +94,7 @@ const getChat = async (req, res = response) => {
         const allChats = await Chat.findAll({
             include: [{
                 model: User,
-                attributes: ['id', 'username'],
+                attributes: ['id', 'name'],
                 through: { attributes: [] }
             }],
             where: {
