@@ -13,7 +13,7 @@ const getMessages = async (req, res = response) => {
             where: { chat_id: chatId, user_id: user.id }
         });
         if (!isMember) return res.status(403).json({ msg: 'Access denied' });
-        const historialChat = await Message.findAll({
+        const chatHistory = await Message.findAll({
             where: {
                 chat_id: chatId
             },
@@ -24,7 +24,7 @@ const getMessages = async (req, res = response) => {
             }]
         });
 
-        return res.status(200).json({ msg: 'Chat', historialChat });
+        return res.status(200).json({ msg: 'Chat', chatHistory });
 
     } catch (error) {
         console.log(error)
