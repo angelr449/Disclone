@@ -21,20 +21,21 @@ const socketController = async (socket, io) => {
 
     // Send message
 
-    socket.on('sendMessage', async({chatId, content})=>{
-        try {
-            const newMessage = await Message.create({
-                chat_id: chatId,
-                sender_id: user.id,
-                content
-            });
+   socket.on('sendMessage', async ({ chatId, content }) => {
+    try {
+        if (!chatId || !content?.trim()) return;
 
-            io.to(chatId).emit('newMessage', newMessage);
-        } catch (error) {
-            console.log(error)
-            
-        }
-    })
+        const newMessage = await Message.create({
+            chat_id: chatId,
+            sender_id: user.id,
+            content: content.trim()
+        });
+
+        io.to(chatId).emit('newMessage', newMessage);
+    } catch (error) {
+        console.log(error);
+    }
+});
 
    
 
