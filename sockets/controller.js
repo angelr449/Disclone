@@ -23,7 +23,7 @@ const socketController = async (socket, io) => {
 
     socket.on('sendMessage', async({chatId, content})=>{
         try {
-            const newMessage = await Messasge.create({
+            const newMessage = await Message.create({
                 chat_id: chatId,
                 sender_id: user.id,
                 content
