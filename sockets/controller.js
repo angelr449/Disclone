@@ -14,17 +14,26 @@ const socketController = async (socket, io) => {
         socket.join(chatId);
     });
 
-    socket.on('sendMessage', async ({ chatId, content }) => {
-        try {
-            const newMessage = await Message.create({
-                chat_id: chatId,
-                sender_id: user.id,
-                content
-            });
-            io.to(chatId).emit('newMessage', newMessage);
-        } catch (error) {
-        }
-    });
+   socket.on('sendMessage', async ({ chatId, content }) => {
+    try {
+        if (!chatId || !content?.trim()) return;
+
+        const newMessage = await Message.create({
+            chat_id: chatId,
+            sender_id: user.id,
+            content: content.trim()
+        });
+
+        // Volver a consultar con el sender incluido
+        const messageWithSender = await Message.findByPk(newMessage.id, {
+            include: ['sender'], // ajusta esto al alias real de tu asociación
+        });
+
+        io.to(chatId).emit('newMessage', messageWithSender);
+    } catch (error) {
+        console.log(error);
+    }
+});
 };
 
 module.exports = {
