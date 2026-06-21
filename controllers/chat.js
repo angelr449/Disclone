@@ -97,23 +97,28 @@ const getChat = async (req, res = response) => {
     const { user } = req;
     if (!user) return res.status(401).json({ msg: 'Unauthorized' });
     try {
+        const myChatIds = await ChatMember.findAll({
+            where: { user_id: user.id },
+            attributes: ['chat_id'],
+        });
+
+        const chatIds = myChatIds.map((cm) => cm.chat_id);
+
         const allChats = await Chat.findAll({
+            where: { id: chatIds },
             include: [{
                 model: User,
-                attributes: ['id', 'name'],
+                attributes: ['id', 'name', 'avatar'],
                 through: { attributes: [] }
             }],
-            where: {
-                '$Users.id$': user.id
-            }
         });
+
         res.status(200).json({ chats: allChats });
     } catch (error) {
         console.log(error);
         res.status(500).json({ msg: 'Please try again later.' });
     }
 }
-
 const getMembersChat = async (req, res = response) => {
     const { chatId } = req.params;
     try {
