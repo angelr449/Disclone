@@ -5,28 +5,27 @@
 **Una API REST inspirada en Discord con mensajería en tiempo real, construida con Node.js, Express y Socket.io.**
 
 ![Licencia](https://img.shields.io/badge/licencia-MIT-blue?style=flat-square)
-![Versión](https://img.shields.io/badge/versión-0.1.0-orange?style=flat-square)
+![Versión](https://img.shields.io/badge/versión-1.0.0-orange?style=flat-square)
 ![Node](https://img.shields.io/badge/Node.js-Express_5-339933?style=flat-square&logo=node.js&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Sequelize_6-4169E1?style=flat-square&logo=postgresql&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-4-010101?style=flat-square&logo=socket.io&logoColor=white)
 
-[🇺🇸 English Version](./README.md) · [Documentación API](https://documenter.getpostman.com/view/47022693/2sBXqQFdTV)
+[🇺🇸 English Version](./README.md) · [Documentación API](https://documenter.getpostman.com/view/47022693/2sBXwvKoiN)
 
 </div>
-
-
 
 ---
 
 ## Características
 
 - 🔐 Autenticación con JWT y contraseñas encriptadas (bcryptjs)
-- 👤 Registro e inicio de sesión de usuarios
-- 🖥️ Creación y gestión de servidores (guilds)
-- 📢 Creación de canales dentro de servidores
-- 💬 Mensajería en tiempo real con Socket.io
+- 👤 Registro, inicio de sesión y búsqueda de perfiles (por ID, por nombre o sesión actual)
+- 💬 Mensajes directos y chats grupales, con gestión de miembros
+- 🟢 Mensajería en tiempo real y presencia en línea/desconectado con Socket.io
+- 🧑‍🤝‍🧑 Sistema de amigos: enviar, listar, aceptar, rechazar y eliminar solicitudes
+- ✏️ Edición y eliminación de mensajes, restringida al autor original
 - 🛡️ Validación de requests con express-validator
-- 🗄️ Base de datos PostgreSQL con Sequelize ORM
+- 🗄️ Base de datos PostgreSQL con Sequelize ORM y borrado lógico (`paranoid`)
 
 ---
 
@@ -63,7 +62,31 @@ cd Disclone
 npm install
 
 # 3. Configura las variables de entorno
-cp example.env .env
+cp .env.example .env
+```
+
+Completa el `.env` con tus propios valores:
+
+```env
+PORT=8081
+
+DATABASE_URL="postgresql://usuario:password@localhost:5432/disclonedb"
+
+SECRETORPRIVATEKEY=tu-secreto-jwt
+```
+
+---
+
+## Configuración de la Base de Datos
+
+La carpeta `db/` contiene el SQL necesario para configurar PostgreSQL manualmente:
+
+```bash
+# Crea el esquema (tablas y llaves foráneas)
+psql -d disclonedb -f db/schema.sql
+
+# (Opcional) Carga datos de ejemplo
+psql -d disclonedb -f db/seed.sql
 ```
 
 ---
@@ -75,7 +98,7 @@ cp example.env .env
 node app.js
 ```
 
-El servidor correrá en `http://localhost:3000`
+El servidor correrá en `http://localhost:8081` (o el `PORT` que hayas definido en tu `.env`).
 
 ---
 
@@ -84,15 +107,15 @@ El servidor correrá en `http://localhost:3000`
 ```
 Disclone/
 ├── controllers/      # Lógica de los handlers de rutas
-├── db/               # Conexión y configuración de la base de datos
-├── helpers/          # Funciones utilitarias (JWT, etc.)
-├── middlewares/      # Middleware de autenticación y validación
-├── models/           # Modelos de Sequelize
-├── routers/          # Definición de rutas
-├── server/           # Configuración del servidor y Socket.io
-├── sockets/          # Manejadores de eventos en tiempo real
-├── app.js            # Punto de entrada de la app
-└── example.env       # Plantilla de variables de entorno
+├── db/                # Conexión, esquema y seed SQL de la base de datos
+├── helpers/           # Funciones utilitarias (JWT, etc.)
+├── middlewares/        # Middleware de autenticación y validación
+├── models/             # Modelos de Sequelize
+├── routers/            # Definición de rutas
+├── server/             # Configuración de Express + Socket.io
+├── sockets/            # Manejadores de eventos en tiempo real y presencia
+├── app.js              # Punto de entrada de la app
+└── .env.example        # Plantilla de variables de entorno
 ```
 
 ---
@@ -101,14 +124,45 @@ Disclone/
 
 URL Base:
 ```
-http://localhost:3000
+http://localhost:8081/api/Disclone
 ```
 
-Esta API cubre los siguientes módulos: **Autenticación**, **Usuarios**, **Servidores**, **Canales** y **Mensajes**.
+Esta API cubre los siguientes módulos: **Auth**, **Usuarios**, **Chats**, **Amigos** y **Mensajes**.
 
 Para la referencia completa de endpoints con body, parámetros y ejemplos de respuesta:
 
-📄 [Ver Documentación API en Postman](https://documenter.getpostman.com/view/47022693/2sBXqQFdTV)
+📄 [Ver Documentación API en Postman](https://documenter.getpostman.com/view/47022693/2sBXwvKoiN)
+
+### Resumen de módulos
+
+| Módulo | Ruta base | Descripción |
+|---|---|---|
+| Auth | `/auth` | Registro e inicio de sesión |
+| Usuarios | `/users` | Usuario actual, búsqueda por id o por nombre |
+| Chats | `/chats` | Crear chats DM/grupales, listar chats, gestionar miembros |
+| Amigos | `/friends` | Solicitudes de amistad: enviar, listar, responder, eliminar |
+| Mensajes | `/messages` | Obtener, editar y eliminar mensajes de un chat |
+
+---
+
+## Eventos en Tiempo Real (Socket.io)
+
+El cliente de Socket.io debe conectarse enviando el JWT en `auth.token`:
+
+```js
+io("http://localhost:8081", {
+  auth: { token: "<tu-jwt>" }
+});
+```
+
+| Evento | Dirección | Descripción |
+|---|---|---|
+| `onlineUsers` | servidor → cliente | Se envía al conectar con la lista de IDs de usuarios en línea |
+| `userOnline` | servidor → cliente | Se transmite cuando un usuario se conecta |
+| `userOffline` | servidor → cliente | Se transmite cuando un usuario se desconecta |
+| `joinChat` | cliente → servidor | Une el socket a la sala de un chat (`chatId`) |
+| `sendMessage` | cliente → servidor | Envía `{ chatId, content }`, guarda el mensaje y lo transmite |
+| `newMessage` | servidor → cliente | Se transmite a todos los miembros de la sala del chat con el nuevo mensaje |
 
 ---
 
