@@ -10,7 +10,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Sequelize_6-4169E1?style=flat-square&logo=postgresql&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-4-010101?style=flat-square&logo=socket.io&logoColor=white)
 
-[🇪🇸 Versión en Español](./README.es.md) · [API Docs](https://documenter.getpostman.com/view/47022693/2sBXwvKoiN)
+[🇪🇸 Versión en Español](./README.es.md) · [API Docs](https://documenter.getpostman.com/view/47022693/2sBXwvKoiN) · [Frontend Repo](https://github.com/angelr449/Disclone-Frontend)
 
 </div>
 
@@ -163,6 +163,14 @@ io("http://localhost:8081", {
 | `joinChat` | client → server | Joins the socket to a chat room (`chatId`) |
 | `sendMessage` | client → server | Sends `{ chatId, content }`, persists the message, and broadcasts it |
 | `newMessage` | server → client | Broadcast to all members of the chat room with the new message |
+
+---
+
+## Frontend
+
+This is the backend powering **Disclone**. The client is a separate React + TypeScript app built with Vite, Tailwind CSS, and shadcn/ui.
+
+🔗 [Disclone frontend repository](https://github.com/angelr449/Disclone-Frontend)
 
 ---
 
